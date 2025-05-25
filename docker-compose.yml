@@ -3,7 +3,7 @@ version: '3.8'
 services:
   web_producto2:
     build:
-      context: . 
+      context: .
       dockerfile: Dockerfile
     container_name: php_apache_producto2
     ports:
@@ -39,6 +39,24 @@ services:
     environment:
       PMA_HOST: mysql_producto2
       MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      - mysql_producto2
+    networks:
+      - red_producto2
+
+  wordpress_producto2:
+    image: wordpress:latest
+    container_name: wordpress_producto2
+    restart: always
+    ports:
+      - "8085:80"
+    environment:
+      WORDPRESS_DB_HOST: mysql_producto2:3306
+      WORDPRESS_DB_NAME: producto2db
+      WORDPRESS_DB_USER: phpower2
+      WORDPRESS_DB_PASSWORD: phpower2
+    volumes:
+      - ./src/wordpress:/var/www/html
     depends_on:
       - mysql_producto2
     networks:

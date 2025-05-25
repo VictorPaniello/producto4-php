@@ -35,6 +35,23 @@
       icon: 'bi-pencil-square',
       text: 'Editar reserva: <?= addslashes($reserva['localizador']) ?>'
     }, '*');
+
+    document.getElementById('form-editar-reserva').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData
+    }).then(response => {
+        if (response.ok) {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarReserva'));
+            modal.hide(); // ✅ CIERRA el modal
+            location.reload(); // (opcional) recarga contenido
+        }
+    });
+});
   </script>
   <?php endif; ?>
 </body>

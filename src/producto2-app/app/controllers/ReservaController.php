@@ -169,6 +169,76 @@ class ReservaController
         }
     }
 
+    public function update()
+{
+    require_once __DIR__ . '/../core/db.php';
+    global $db;
+
+    $id = $_GET['id'] ?? null;
+    $usuarioId = $_SESSION['usuario']['id'] ?? null;
+
+    if (!$id || !$usuarioId) {
+        echo "ID de reserva o sesión no válida.";
+        return;
+    }
+
+    // 1. Comprobar que la reserva pertenece al usuario
+    $stmt = $db->prepare("SELECT * FROM transfer_reservas WHERE id_reserva = ? AND id_cliente = ?");
+    $stmt->execute([$id, $usuarioId]);
+    $reserva = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$reserva) {
+        echo "No tienes permiso para modificar esta reserva.";
+        return;
+    }
+
+    // 2. Validar que faltan al menos 48h para la fecha de entrada
+    $fechaEntrada = new DateTime($_POST['fecha_entrada'] . ' ' . $_POST['hora_entrada']);
+    $ahora = new DateTime();
+
+    if ($fechaEntrada <= $ahora || $ahora->diff($fechaEntrada)->days < 2) {
+        echo "Solo puedes modificar reservas con más de 48h de antelación.";
+        return;
+    }
+
+    // 3. Validar campos mínimos (puedes añadir más validaciones)
+    if (empty($_POST['id_tipo_reserva']) || empty($_POST['id_destino']) || empty($_POST['num_viajeros'])) {
+        echo "Faltan campos obligatorios.";
+        return;
+    }
+
+    // 4. Ejecutar UPDATE
+    $stmt = $db->prepare("UPDATE transfer_reservas SET 
+        id_tipo_reserva = ?, id_destino = ?, fecha_entrada = ?, hora_entrada = ?,
+        numero_vuelo_entrada = ?, origen_vuelo_entrada = ?, fecha_vuelo_salida = ?, hora_vuelo_salida = ?,
+        num_viajeros = ?, id_vehiculo = ?
+        WHERE id_reserva = ?");
+
+    $stmt->execute([
+        $_POST['id_tipo_reserva'],
+        $_POST['id_destino'],
+        $_POST['fecha_entrada'],
+        $_POST['hora_entrada'],
+        $_POST['numero_vuelo_entrada'],
+        $_POST['origen_vuelo_entrada'],
+        $_POST['fecha_vuelo_salida'] ?? null,
+        $_POST['hora_vuelo_salida'] ?? null,
+        $_POST['num_viajeros'],
+        $_POST['id_vehiculo'],
+        $id
+    ]);
+
+    // 5. Redirigir o cerrar modal
+    if (!empty($_GET['modal'])) {
+        echo "<script>window.parent.location.href = '?r=reserva/index';</script>";
+        exit;
+    } else {
+        header("Location: ?r=reserva/index");
+        exit;
+    }
+}
+
+
     public function delete()
     {
         require_once __DIR__ . '/../core/db.php';
