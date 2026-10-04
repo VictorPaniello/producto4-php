@@ -1,20 +1,20 @@
-# Proyecto PHP Producto 2 - UOC
+# PHP Project - Producto 2 (UOC)
 
-Este proyecto es parte del módulo de PHP en la UOC. Incluye:
+A booking and admin web app built for the PHP module at the Universitat Oberta de Catalunya (UOC). It includes:
 
-- Docker con Apache, MySQL y PHPMyAdmin
-- Arquitectura MVC sin framework
-- Preparado para Laravel (Producto 3)
+- Docker setup with Apache, MySQL, and phpMyAdmin
+- Framework-free MVC architecture (custom router, controllers, models, views)
+- Structured to be migrated to Laravel in the next phase (Producto 3)
 
-## Cómo arrancar
+## Getting started
 
 ```bash
 docker compose up -d --build
-
+```
 
 ## Views
 
 - Home: http://localhost:8083/?r=home/index
-- LogIn Particular: http://localhost:8083/?r=auth/login&type=particular
-- Login Administrador: http://localhost:8083/?r=auth/login&type=admin
-- Dashboard Cliente: http://localhost:8083/?r=dashboard/cliente
+- Customer login: http://localhost:8083/?r=auth/login&type=particular
+- Admin login: http://localhost:8083/?r=auth/login&type=admin
+- Customer dashboard: http://localhost:8083/?r=dashboard/cliente
